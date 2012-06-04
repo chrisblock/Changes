@@ -1,0 +1,1 @@
+A DynamicObject based generic ChangeSet for managing partial changes to POCO objects supplied through JSON HTTP requests.
