@@ -124,7 +124,7 @@ namespace Changes
 
 		private object GetChangeFor(string propertyName, Type propertyType)
 		{
-			object result = null;
+			object result;
 
 			if (propertyType.IsValueType)
 			{
@@ -140,10 +140,17 @@ namespace Changes
 				{
 					result = Convert.ChangeType(value, conversionType);
 				}
+				else
+				{
+					throw new ChangeNotFoundException(propertyName);
+				}
 			}
 			else
 			{
-				_changedMembers.TryGetValue(propertyName, out result);
+				if (_changedMembers.TryGetValue(propertyName, out result) == false)
+				{
+					throw new ChangeNotFoundException(propertyName);
+				}
 			}
 
 			return result;

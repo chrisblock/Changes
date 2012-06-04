@@ -231,27 +231,27 @@ namespace Changes.Tests
 		}
 
 		[Test]
-		public void GetChangeFor_ReferencePropertyNotInChangeSet_ReturnsNull()
+		public void GetChangeFor_ReferencePropertyNotInChangeSet_ThrowsChangeNotFoundException()
 		{
 			var changeSet = new ChangeSet<TestObject>();
 
-			Assert.That(changeSet.GetChangeFor(x => x.TestString), Is.Null);
+			Assert.That(() => changeSet.GetChangeFor(x => x.TestString), Throws.InstanceOf<ChangeNotFoundException>());
 		}
 
 		[Test]
-		public void GetChangeFor_ValuePropertyNotInChangeSet_ThrowsException()
+		public void GetChangeFor_ValuePropertyNotInChangeSet_ThrowsChangeNotFoundException()
 		{
 			var changeSet = new ChangeSet<TestObject>();
 
-			Assert.That(() => changeSet.GetChangeFor(x => x.TestInteger), Throws.Exception);
+			Assert.That(() => changeSet.GetChangeFor(x => x.TestInteger), Throws.InstanceOf<ChangeNotFoundException>());
 		}
 
 		[Test]
-		public void GetChangeFor_EnumPropertyNotInChangeSet_ThrowsException()
+		public void GetChangeFor_EnumPropertyNotInChangeSet_ThrowsChangeNotFoundException()
 		{
 			var changeSet = new ChangeSet<TestObject>();
 
-			Assert.That(() => changeSet.GetChangeFor(x => x.TestEnum), Throws.Exception);
+			Assert.That(() => changeSet.GetChangeFor(x => x.TestEnum), Throws.InstanceOf<ChangeNotFoundException>());
 		}
 
 		[Test]
