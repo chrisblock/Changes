@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Changes")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A DynamicObject based generic ChangeSet for managing partial changes to POCO objects supplied through JSON HTTP requests.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Changes")]
+[assembly: AssemblyCompany("Chris Block")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
