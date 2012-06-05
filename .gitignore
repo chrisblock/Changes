@@ -7,4 +7,6 @@ _Resharper.*/
 bin/
 obj/
 
+_build_output/
+
 Thumbs.db
