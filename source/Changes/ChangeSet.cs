@@ -63,6 +63,11 @@ namespace Changes
 
 			var propertyName = propertyExpression.Member.Name;
 
+			return HasChangeFor(propertyName);
+		}
+
+		private bool HasChangeFor(string propertyName)
+		{
 			return _changedMembers.ContainsKey(propertyName);
 		}
 
@@ -77,6 +82,11 @@ namespace Changes
 
 			var propertyName = propertyExpression.Member.Name;
 
+			SetChangeFor(propertyName, value);
+		}
+
+		private void SetChangeFor(string propertyName, object value)
+		{
 			_changedMembers[propertyName] = value;
 		}
 
@@ -92,6 +102,30 @@ namespace Changes
 			var propertyName = propertyExpression.Member.Name;
 
 			return (TProperty) GetChangeFor(propertyName, typeof (TProperty));
+		}
+
+		private object GetChangeFor(string propertyName, Type propertyType)
+		{
+			object result;
+
+			var conversionType = propertyType;
+
+			if (propertyType.IsEnum)
+			{
+				conversionType = Enum.GetUnderlyingType(propertyType);
+			}
+
+			object value;
+			if (_changedMembers.TryGetValue(propertyName, out value))
+			{
+				result = Convert.ChangeType(value, conversionType);
+			}
+			else
+			{
+				throw new ChangeNotFoundException(propertyName);
+			}
+
+			return result;
 		}
 
 		public bool TryGetChangeFor<TProperty>(Expression<Func<T, TProperty>> property, out TProperty result)
@@ -122,65 +156,24 @@ namespace Changes
 			return success;
 		}
 
-		private object GetChangeFor(string propertyName, Type propertyType)
-		{
-			object result;
-
-			if (propertyType.IsValueType)
-			{
-				var conversionType = propertyType;
-				
-				if (propertyType.IsEnum)
-				{
-					conversionType = Enum.GetUnderlyingType(propertyType);
-				}
-
-				object value;
-				if (_changedMembers.TryGetValue(propertyName, out value))
-				{
-					result = Convert.ChangeType(value, conversionType);
-				}
-				else
-				{
-					throw new ChangeNotFoundException(propertyName);
-				}
-			}
-			else
-			{
-				if (_changedMembers.TryGetValue(propertyName, out result) == false)
-				{
-					throw new ChangeNotFoundException(propertyName);
-				}
-			}
-
-			return result;
-		}
-
 		private bool TryGetChangeFor(string propertyName, Type propertyType, out object result)
 		{
 			result = null;
 
 			var success = false;
 
-			if (propertyType.IsValueType)
+			var conversionType = propertyType;
+
+			if (propertyType.IsEnum)
 			{
-				var conversionType = propertyType;
-
-				if (propertyType.IsEnum)
-				{
-					conversionType = Enum.GetUnderlyingType(propertyType);
-				}
-
-				object value;
-				if (_changedMembers.TryGetValue(propertyName, out value))
-				{
-					result = Convert.ChangeType(value, conversionType);
-					success = true;
-				}
+				conversionType = Enum.GetUnderlyingType(propertyType);
 			}
-			else
+
+			object value;
+			if (_changedMembers.TryGetValue(propertyName, out value))
 			{
-				success = _changedMembers.TryGetValue(propertyName, out result);
+				result = Convert.ChangeType(value, conversionType);
+				success = true;
 			}
 
 			return success;
@@ -188,16 +181,19 @@ namespace Changes
 
 		public void ApplyChanges(ref T obj)
 		{
-			foreach (var property in Properties)
+			if (HasChanges)
 			{
-				var propertyName = property.Name;
-				var propertyType = property.PropertyType;
-
-				if (_changedMembers.ContainsKey(propertyName))
+				foreach (var property in Properties)
 				{
-					var changedValue = GetChangeFor(propertyName, propertyType);
+					var propertyName = property.Name;
+					var propertyType = property.PropertyType;
 
-					property.SetValue(obj, changedValue, new object[0]);
+					if (HasChangeFor(propertyName))
+					{
+						var changedValue = GetChangeFor(propertyName, propertyType);
+
+						property.SetValue(obj, changedValue, new object[0]);
+					}
 				}
 			}
 		}
