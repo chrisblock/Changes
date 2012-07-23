@@ -367,6 +367,7 @@ namespace Changes.Tests
 			const TestEnum testEnumValue = TestEnum.ValueOne;
 			const int testIntegerValue = 42;
 			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
 
 			const string changedStringValue = "Hello, World";
 
@@ -374,7 +375,8 @@ namespace Changes.Tests
 			{
 				TestEnum = testEnumValue,
 				TestInteger = testIntegerValue,
-				TestString = testStringValue
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
 			};
 
 			dynamic changeSet = new ChangeSet<TestObject>();
@@ -395,6 +397,7 @@ namespace Changes.Tests
 			const TestEnum testEnumValue = TestEnum.ValueOne;
 			const int testIntegerValue = 42;
 			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
 
 			const int changedIntegerValue = 24;
 
@@ -402,7 +405,8 @@ namespace Changes.Tests
 			{
 				TestEnum = testEnumValue,
 				TestInteger = testIntegerValue,
-				TestString = testStringValue
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
 			};
 
 			dynamic changeSet = new ChangeSet<TestObject>();
@@ -423,6 +427,7 @@ namespace Changes.Tests
 			const TestEnum testEnumValue = TestEnum.ValueOne;
 			const int testIntegerValue = 42;
 			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
 
 			const TestEnum changedEnumValue = TestEnum.ValueTwo;
 
@@ -430,7 +435,8 @@ namespace Changes.Tests
 			{
 				TestEnum = testEnumValue,
 				TestInteger = testIntegerValue,
-				TestString = testStringValue
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
 			};
 
 			dynamic changeSet = new ChangeSet<TestObject>();
@@ -443,6 +449,37 @@ namespace Changes.Tests
 			Assert.That(testObject.TestEnum, Is.EqualTo(changedEnumValue));
 			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
 			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+		}
+
+		[Test]
+		public void ApplyChanges_IntegerEnumerationPropertyOnTypeChanged_PropertyInChangeSetIsChanged()
+		{
+			const TestEnum testEnumValue = TestEnum.ValueOne;
+			const int testIntegerValue = 42;
+			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
+
+			var changedIntegerEnumeration = new[] { 6, 7, 8 };
+
+			var testObject = new TestObject
+			{
+				TestEnum = testEnumValue,
+				TestInteger = testIntegerValue,
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
+			};
+
+			dynamic changeSet = new ChangeSet<TestObject>();
+
+			changeSet.TestIntegerEnumeration = changedIntegerEnumeration;
+
+			changeSet.ApplyChanges(ref testObject);
+
+			Assert.That(testObject, Is.Not.Null);
+			Assert.That(testObject.TestEnum, Is.EqualTo(testEnumValue));
+			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
+			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+			Assert.That(testObject.TestIntegerEnumeration, Is.EquivalentTo(changedIntegerEnumeration));
 		}
 	}
 }

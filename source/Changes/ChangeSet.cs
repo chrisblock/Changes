@@ -118,7 +118,18 @@ namespace Changes
 			object value;
 			if (_changedMembers.TryGetValue(propertyName, out value))
 			{
-				result = Convert.ChangeType(value, conversionType);
+				if (conversionType.IsInstanceOfType(value))
+				{
+					result = value;
+				}
+				else if (typeof (IConvertible).IsAssignableFrom(conversionType))
+				{
+					result = Convert.ChangeType(value, conversionType);
+				}
+				else
+				{
+					throw new TypeConversionException(String.Format("Could not convert Change of type '{0}' to property '{1}' of type '{2}'.", value.GetType(), propertyName, conversionType));
+				}
 			}
 			else
 			{

@@ -39,6 +39,7 @@
     <Compile Include="ChangeNotFoundException.cs" />
     <Compile Include="ChangeSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeConversionException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Changes.nuspec">
