@@ -9,7 +9,7 @@
 		<projectUrl>https://github.com/chrisblock/Changes</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<releaseNotes>Initial release.</releaseNotes>
+		<releaseNotes>Updated to better support non-IConvertible property types (e.g. collections).</releaseNotes>
 		<copyright>Copyright 2012</copyright>
 		<tags>JSON HTTP</tags>
 	</metadata>

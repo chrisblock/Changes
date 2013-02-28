@@ -26,6 +26,6 @@ $nuget = Join-Path $baseDir "tools\NuGet\nuget.exe"
 
 $changesProject = Join-Path $baseDir "source\Changes\Changes.csproj"
 
-$package = "$nuget pack $changesProject -Prop Configuration=Release"
+$package = "$nuget pack $changesProject -Properties ""Configuration=Release"""
 
 Invoke-Expression $package
