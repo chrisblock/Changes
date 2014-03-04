@@ -114,6 +114,10 @@ namespace Changes
 			{
 				conversionType = Enum.GetUnderlyingType(propertyType);
 			}
+			else if (propertyType.IsGenericType && (propertyType.GetGenericTypeDefinition() == typeof (Nullable<>)))
+			{
+				conversionType = propertyType.GetGenericArguments().Single();
+			}
 
 			object value;
 			if (_changedMembers.TryGetValue(propertyName, out value))
@@ -125,6 +129,10 @@ namespace Changes
 				else if (typeof (IConvertible).IsAssignableFrom(conversionType))
 				{
 					result = Convert.ChangeType(value, conversionType);
+				}
+				else if (typeof (Guid).IsAssignableFrom(conversionType))
+				{
+					result = Guid.Parse(String.Format("{0}", value));
 				}
 				else
 				{

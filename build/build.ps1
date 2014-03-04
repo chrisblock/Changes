@@ -24,8 +24,8 @@ Invoke-Expression $build
 
 $nuget = Join-Path $baseDir "tools\NuGet\nuget.exe"
 
-$changesProject = Join-Path $baseDir "source\Changes\Changes.csproj"
+$project = Join-Path $baseDir "source\Changes\Changes.csproj"
 
-$package = "$nuget pack $changesProject -Properties ""Configuration=Release"""
+$package = "$nuget pack $project -Properties ""Configuration=Release"""
 
 Invoke-Expression $package

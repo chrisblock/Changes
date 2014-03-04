@@ -9,8 +9,8 @@
 		<projectUrl>https://github.com/chrisblock/Changes</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<releaseNotes>Updated to better support non-IConvertible property types (e.g. collections).</releaseNotes>
-		<copyright>Copyright 2012</copyright>
+		<releaseNotes>Updated to support Nullable value types and Guids better.</releaseNotes>
+		<copyright>Copyright 2014</copyright>
 		<tags>JSON HTTP</tags>
 	</metadata>
 </package>

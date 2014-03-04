@@ -1,10 +1,10 @@
-﻿// ReSharper disable InconsistentNaming
-
-using System;
+﻿using System;
 
 using NUnit.Framework;
 
 using Newtonsoft.Json;
+
+// ReSharper disable InconsistentNaming
 
 namespace Changes.Tests
 {
@@ -218,6 +218,51 @@ namespace Changes.Tests
 		}
 
 		[Test]
+		public void GetChangeFor_NullableValueTypeProperty_ReturnsChangedValue()
+		{
+			int? changeSetValue = 3;
+
+			var serializedChangeSet = JsonConvert.SerializeObject(new
+			{
+				TestNullableInteger = changeSetValue
+			});
+
+			var changeSet = JsonConvert.DeserializeObject<ChangeSet<TestObject>>(serializedChangeSet);
+
+			Assert.That(changeSet.GetChangeFor(x => x.TestNullableInteger), Is.EqualTo(changeSetValue));
+		}
+
+		[Test]
+		public void GetChangeFor_GuidTypeProperty_ReturnsChangedValue()
+		{
+			var changeSetValue = Guid.NewGuid();
+
+			var serializedChangeSet = JsonConvert.SerializeObject(new
+			{
+				TestGuid = changeSetValue
+			});
+
+			var changeSet = JsonConvert.DeserializeObject<ChangeSet<TestObject>>(serializedChangeSet);
+
+			Assert.That(changeSet.GetChangeFor(x => x.TestGuid), Is.EqualTo(changeSetValue));
+		}
+
+		[Test]
+		public void GetChangeFor_NullableGuidTypeProperty_ReturnsChangedValue()
+		{
+			var changeSetValue = Guid.NewGuid();
+
+			var serializedChangeSet = JsonConvert.SerializeObject(new
+			{
+				TestNullableGuid = changeSetValue
+			});
+
+			var changeSet = JsonConvert.DeserializeObject<ChangeSet<TestObject>>(serializedChangeSet);
+
+			Assert.That(changeSet.GetChangeFor(x => x.TestNullableGuid), Is.EqualTo(changeSetValue));
+		}
+
+		[Test]
 		public void GetChangeFor_EnumProperty_ReturnsChangedValue()
 		{
 			const TestEnum changeSetValue = TestEnum.ValueOne;
@@ -422,6 +467,100 @@ namespace Changes.Tests
 		}
 
 		[Test]
+		public void ApplyChanges_NullableValuePropertyOnTypeChanged_PropertyInChangeSetIsChanged()
+		{
+			const TestEnum testEnumValue = TestEnum.ValueOne;
+			const int testIntegerValue = 42;
+			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
+
+			const int changedIntegerValue = 24;
+
+			var testObject = new TestObject
+			{
+				TestEnum = testEnumValue,
+				TestNullableInteger = testIntegerValue,
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
+			};
+
+			dynamic changeSet = new ChangeSet<TestObject>();
+
+			changeSet.TestNullableInteger = changedIntegerValue;
+
+			changeSet.ApplyChanges(ref testObject);
+
+			Assert.That(testObject, Is.Not.Null);
+			Assert.That(testObject.TestEnum, Is.EqualTo(testEnumValue));
+			Assert.That(testObject.TestNullableInteger, Is.EqualTo(changedIntegerValue));
+			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+		}
+
+		[Test]
+		public void ApplyChanges_GuidPropertyOnTypeChanged_PropertyInChangeSetIsChanged()
+		{
+			const TestEnum testEnumValue = TestEnum.ValueOne;
+			const int testIntegerValue = 42;
+			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
+
+			var changedGuidValue = Guid.NewGuid();
+
+			var testObject = new TestObject
+			{
+				TestGuid = Guid.Empty,
+				TestEnum = testEnumValue,
+				TestInteger = testIntegerValue,
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
+			};
+
+			dynamic changeSet = new ChangeSet<TestObject>();
+
+			changeSet.TestGuid = changedGuidValue;
+
+			changeSet.ApplyChanges(ref testObject);
+
+			Assert.That(testObject, Is.Not.Null);
+			Assert.That(testObject.TestEnum, Is.EqualTo(testEnumValue));
+			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
+			Assert.That(testObject.TestGuid, Is.EqualTo(changedGuidValue));
+			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+		}
+
+		[Test]
+		public void ApplyChanges_NullableGuidPropertyOnTypeChanged_PropertyInChangeSetIsChanged()
+		{
+			const TestEnum testEnumValue = TestEnum.ValueOne;
+			const int testIntegerValue = 42;
+			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+			var testIntegerEnumeration = new[] { 1, 2, 3, 4, 5 };
+
+			var changedGuidValue = Guid.NewGuid();
+
+			var testObject = new TestObject
+			{
+				TestNullableGuid = Guid.Empty,
+				TestEnum = testEnumValue,
+				TestInteger = testIntegerValue,
+				TestString = testStringValue,
+				TestIntegerEnumeration = testIntegerEnumeration
+			};
+
+			dynamic changeSet = new ChangeSet<TestObject>();
+
+			changeSet.TestNullableGuid = changedGuidValue;
+
+			changeSet.ApplyChanges(ref testObject);
+
+			Assert.That(testObject, Is.Not.Null);
+			Assert.That(testObject.TestEnum, Is.EqualTo(testEnumValue));
+			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
+			Assert.That(testObject.TestNullableGuid, Is.EqualTo(changedGuidValue));
+			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+		}
+
+		[Test]
 		public void ApplyChanges_EnumPropertyOnTypeChanged_PropertyInChangeSetIsChanged()
 		{
 			const TestEnum testEnumValue = TestEnum.ValueOne;
@@ -480,6 +619,39 @@ namespace Changes.Tests
 			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
 			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
 			Assert.That(testObject.TestIntegerEnumeration, Is.EquivalentTo(changedIntegerEnumeration));
+		}
+
+		[Test]
+		public void ApplyChanges_ChildrenOnTypeChanged_PropertyInChangeSetIsChanged()
+		{
+			const TestEnum testEnumValue = TestEnum.ValueOne;
+			const int testIntegerValue = 42;
+			const string testStringValue = "The quick brown fox jumped over the lazy dog.";
+
+			var testChildren = new[]
+			{
+				new TestObject()
+			};
+
+			var testObject = new TestObject
+			{
+				TestEnum = testEnumValue,
+				TestInteger = testIntegerValue,
+				TestString = testStringValue,
+				Children = new TestObject[0]
+			};
+
+			dynamic changeSet = new ChangeSet<TestObject>();
+
+			changeSet.Children = testChildren;
+
+			changeSet.ApplyChanges(ref testObject);
+
+			Assert.That(testObject, Is.Not.Null);
+			Assert.That(testObject.TestEnum, Is.EqualTo(testEnumValue));
+			Assert.That(testObject.TestInteger, Is.EqualTo(testIntegerValue));
+			Assert.That(testObject.TestString, Is.EqualTo(testStringValue));
+			Assert.That(testObject.Children, Is.EquivalentTo(testChildren));
 		}
 	}
 }
